@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionStatsMod", "ProductionStatsMod\ProductionStatsMod.csproj", "{0B92A4D6-9360-4903-A405-C692DBB76AB6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B92A4D6-9360-4903-A405-C692DBB76AB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B92A4D6-9360-4903-A405-C692DBB76AB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B92A4D6-9360-4903-A405-C692DBB76AB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B92A4D6-9360-4903-A405-C692DBB76AB6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F238BC35-0E3C-4D49-89F0-59D4BC0CAEC2}
+	EndGlobalSection
+EndGlobal
