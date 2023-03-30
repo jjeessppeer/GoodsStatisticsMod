@@ -368,6 +368,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GoodMonitorPatch.cs" />
     <Compile Include="GoodsRecorder.cs" />
     <Compile Include="ProductionStatsMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

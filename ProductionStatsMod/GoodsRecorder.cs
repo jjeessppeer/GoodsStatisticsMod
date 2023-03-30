@@ -14,82 +14,119 @@ using System.Diagnostics;
 
 namespace ProductionStatsMod
 {
+    public struct GoodChange
+    {
+        public int Timestamp;
+        public string GoodName;
+        public int GoodDelta;
+
+        public string Category;
+
+        public string BuildingName;
+        public int BuildingId;
+
+        public GoodChange(string goodName, int goodDelta, string category, string buildingName = "", int buildingId = -1)
+        {
+            Timestamp = -1;
+            GoodName = goodName;
+            GoodDelta = goodDelta;
+            Category = category;
+
+            BuildingName = buildingName;
+            BuildingId = buildingId;
+        }
+        public override string ToString()
+        {
+            string s = $"GoodChange: \n\t{GoodName} {GoodDelta}\n\t{Category}";
+            if (BuildingName != "")
+                s += $"\n\t{BuildingId} {BuildingName}";
+
+            return s;
+
+        }
+    }
+
     public class ProductionStats
     {
-        struct GoodChange
-        {
-            int timestamp;
-            Good good;
-            int delta;
-            string source;
-        }
-
         private List<GoodChange> ProductionTimeline = new List<GoodChange>();
 
         public ProductionStats()
         {
             Console.WriteLine($"Initializing production stats...");
-
         }
 
-        public void GoodProduced(Good good)
+        public void AddGoodChange(GoodChange goodChange)
         {
-            Console.WriteLine($"Goods produced: {good}");
-
-        }
-
-        public void GoodConsumed(Good good)
-        {
-            Console.WriteLine($"Goods consumed: {good}");
+            Console.WriteLine(goodChange);
+            ProductionTimeline.Add(goodChange);
         }
     }
 
-    [HarmonyPatch]
-    public static class StatRecorder
+    public static class GoodMonitor
     {
         static ProductionStats _ProductionStats;
 
-
-        static void Reset()
+        public static void Reset()
         {
             _ProductionStats = new ProductionStats();
         }
 
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(Eremite.Services.StorageService), "StoreInitialGoods")]
-        private static void StoreInitialGoods()
+        public static void GetTimestamp()
         {
-            Console.WriteLine("StoreInitialGoods");
-            Reset();
+
         }
 
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(GathererHut), "Store", new Type[] { typeof(Good) })]
-        private static void GathererStore(Good good, GathererHut __instance)
+        public static void BuildingProduction(Good good, Building building)
         {
-            Console.WriteLine($"Gatherer stored: {good} {__instance}");
-            StackTrace stackTrace = new StackTrace();
-            //Console.WriteLine($"Called from 1: {stackTrace.GetFrame(1).GetMethod().Name}");
-            //Console.WriteLine($"Called from 2: {stackTrace.GetFrame(2).GetMethod().Name}");
-            //Console.WriteLine($"Called from 3: {stackTrace.GetFrame(3).GetMethod().Name}");
-            // Maybe unnececary? Is post ever stored to unless production is finished?
-            if (stackTrace.GetFrame(3).GetMethod().Name == "FinishProduction")
+            GoodChange goodChange = new GoodChange(good.name, good.amount, "BuildingProduction", building.name, building.Id);
+            _ProductionStats.AddGoodChange(goodChange);
+        }
+
+        public static void ConstructionDeliver(Good good, Building building)
+        {
+            GoodChange goodChange = new GoodChange(good.name, -good.amount, "ConstructionDeliver", building.name, building.Id);
+            _ProductionStats.AddGoodChange(goodChange);
+        }
+
+        public static void ConstructionRefund(Good good, Building building)
+        {
+            GoodChange goodChange = new GoodChange()
             {
-                _ProductionStats.GoodProduced(good);
-            }
+                GoodName = good.name,
+                GoodDelta = good.amount,
+                Category = "ConstructionRefund",
+                BuildingName = building.Name,
+                BuildingId = building.Id
+            };
+            _ProductionStats.AddGoodChange(goodChange);
+
         }
 
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(Workshop), "FinishProduction")]
-        private static void WorkshipFinish(WorkshopProductionState production, Workshop __instance)
+        public static void OtherGoodAdd(Good good)
         {
-            Good good = production.product * production.multiplier;
-            Console.WriteLine($"Workshop produced: {good} {__instance}");
-            _ProductionStats.GoodProduced(good);
+            GoodChange goodChange = new GoodChange()
+            {
+                GoodName = good.name,
+                GoodDelta = good.amount,
+                Category = "Other"
+            };
+            _ProductionStats.AddGoodChange(goodChange);
 
-            // consume
-            //production.ingredients; 
-            Console.WriteLine($"Storing: {good} {__instance}");
         }
+
+        public static void OtherGoodRemove(Good good)
+        {
+            GoodChange goodChange = new GoodChange()
+            {
+                GoodName = good.name,
+                GoodDelta = -good.amount,
+                Category = "Other"
+            };
+            _ProductionStats.AddGoodChange(goodChange);
+
+        }
+
+        
+
     }
 }
