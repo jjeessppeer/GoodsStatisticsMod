@@ -8,6 +8,7 @@ using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 using Eremite.Buildings;
+using Eremite.Services;
 using Eremite.Model;
 using Eremite;
 using System.Diagnostics;
@@ -17,14 +18,12 @@ namespace ProductionStatsMod
     [HarmonyPatch]
     public static class GoodMonitorPatch
     {
-        
-
-
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Eremite.Services.StorageService), "StoreInitialGoods")]
-        private static void StoreInitialGoods()
+        private static void StoreInitialGoods(StorageService __instance)
         {
             Console.WriteLine("StoreInitialGoods");
+            //__instance.Main.Store(Serviceable.StateService.Conditions.embarkGoods);
             GoodMonitor.Reset();
         }
 
@@ -85,13 +84,17 @@ namespace ProductionStatsMod
                 GoodMonitor.ConstructionRefund(good, __instance);
                 return;
             }
+            //if (stackTrace.GetFrame(2).GetMethod().Name == "StoreInitialGoods")
 
-            // Ignored cases. Not actual new production, just moving.
-            //if (stackTrace.GetFrame(2).GetMethod().Name == "OnGoodRemoved" ||
-            //    stackTrace.GetFrame(3).GetMethod().Name == "StoreGoods")
-            //{
-            //    return;
-            //}
+            //Ignored cases. Not actual new production, just moving.
+            if (
+                stackTrace.GetFrame(2).GetMethod().Name == "OnGoodRemoved" ||
+                //stackTrace.GetFrame(3).GetMethod().Name == "StoreGoods" || 
+                false
+                )
+            {
+                return;
+            }
             GoodMonitor.OtherGoodAdd(good);
             // Unhandled cases.
             Console.WriteLine($"Storage other source: {good} {__instance}");
@@ -157,11 +160,11 @@ namespace ProductionStatsMod
         {
             Console.WriteLine($"Storage Remove: {good} {__instance}");
             GoodMonitor.OtherGoodRemove(good);
-            //StackTrace stackTrace = new StackTrace();
-            //Console.WriteLine($"1: {stackTrace.GetFrame(1).GetMethod().Name}");
-            //Console.WriteLine($"2: {stackTrace.GetFrame(2).GetMethod().Name}");
-            //Console.WriteLine($"3: {stackTrace.GetFrame(3).GetMethod().Name}");
-            //Console.WriteLine($"4: {stackTrace.GetFrame(4).GetMethod().Name}");
+            StackTrace stackTrace = new StackTrace();
+            Console.WriteLine($"1: {stackTrace.GetFrame(1).GetMethod().Name}");
+            Console.WriteLine($"2: {stackTrace.GetFrame(2).GetMethod().Name}");
+            Console.WriteLine($"3: {stackTrace.GetFrame(3).GetMethod().Name}");
+            Console.WriteLine($"4: {stackTrace.GetFrame(4).GetMethod().Name}");
         }
 
 

@@ -90,38 +90,20 @@ namespace ProductionStatsMod
 
         public static void ConstructionRefund(Good good, Building building)
         {
-            GoodChange goodChange = new GoodChange()
-            {
-                GoodName = good.name,
-                GoodDelta = good.amount,
-                Category = "ConstructionRefund",
-                BuildingName = building.Name,
-                BuildingId = building.Id
-            };
+            GoodChange goodChange = new GoodChange(good.name, good.amount, "ConstructionRefund", building.name, building.Id);
             _ProductionStats.AddGoodChange(goodChange);
-
         }
 
         public static void OtherGoodAdd(Good good)
         {
-            GoodChange goodChange = new GoodChange()
-            {
-                GoodName = good.name,
-                GoodDelta = good.amount,
-                Category = "Other"
-            };
+            GoodChange goodChange = new GoodChange(good.name, good.amount, "Other");
             _ProductionStats.AddGoodChange(goodChange);
 
         }
 
         public static void OtherGoodRemove(Good good)
         {
-            GoodChange goodChange = new GoodChange()
-            {
-                GoodName = good.name,
-                GoodDelta = -good.amount,
-                Category = "Other"
-            };
+            GoodChange goodChange = new GoodChange(good.name, -good.amount, "Other");
             _ProductionStats.AddGoodChange(goodChange);
 
         }
