@@ -25,19 +25,34 @@ namespace ProductionStatsMod
         public string BuildingName;
         public int BuildingId;
 
-        public GoodChange(string goodName, int goodDelta, string category, string buildingName = "", int buildingId = -1)
+
+        public GoodChange(string goodName, int goodDelta, string category)
         {
             Timestamp = -1;
             GoodName = goodName;
             GoodDelta = goodDelta;
             Category = category;
 
-            BuildingName = buildingName;
-            BuildingId = buildingId;
+            BuildingName = "";
+            BuildingId = -1;
         }
+
+        public GoodChange(string goodName, int goodDelta, string category, Building building)
+        {
+            Timestamp = -1;
+            GoodName = goodName;
+            GoodDelta = goodDelta;
+            Category = category;
+
+            BuildingName = building.BuildingModel.Name;
+            BuildingId = building.Id;
+        }
+
         public override string ToString()
         {
-            string s = $"GoodChange: \n\t{GoodName} {GoodDelta}\n\t{Category}";
+            string s = $"GoodChange: \n\t" +
+                $"{GoodName} {GoodDelta}\n\t" +
+                $"{Category}";
             if (BuildingName != "")
                 s += $"\n\t{BuildingId} {BuildingName}";
 
@@ -64,7 +79,7 @@ namespace ProductionStatsMod
 
     public static class GoodMonitor
     {
-        static ProductionStats _ProductionStats;
+        static ProductionStats _ProductionStats = new ProductionStats();
 
         public static void Reset()
         {
@@ -76,21 +91,65 @@ namespace ProductionStatsMod
 
         }
 
+        public static void TestFunction()
+        {
+            Console.WriteLine("TestFunction 1");
+        }
+
+        public static void TestFunction2(string str)
+        {
+            Console.WriteLine("TestFunction 2");
+            Console.WriteLine(str);
+        }
+
+        public static void TestFunction3(object obj)
+        {
+            Console.WriteLine("TestFunction 3");
+            Console.WriteLine(obj);
+        }
+
+        public static void TestFunction4(Good good)
+        {
+            Console.WriteLine("TestFunction 4");
+            Console.WriteLine(good);
+            Reset();
+            GoodChange goodChange = new GoodChange(good.name, -good.amount, "HearthSacrifice");
+            _ProductionStats.AddGoodChange(goodChange);
+        }
+
         public static void BuildingProduction(Good good, Building building)
         {
-            GoodChange goodChange = new GoodChange(good.name, good.amount, "BuildingProduction", building.name, building.Id);
+            GoodChange goodChange = new GoodChange(good.name, good.amount, "BuildingProduction", building);
             _ProductionStats.AddGoodChange(goodChange);
         }
 
         public static void ConstructionDeliver(Good good, Building building)
         {
-            GoodChange goodChange = new GoodChange(good.name, -good.amount, "ConstructionDeliver", building.name, building.Id);
+            GoodChange goodChange = new GoodChange(good.name, -good.amount, "ConstructionDeliver", building);
             _ProductionStats.AddGoodChange(goodChange);
         }
 
         public static void ConstructionRefund(Good good, Building building)
         {
-            GoodChange goodChange = new GoodChange(good.name, good.amount, "ConstructionRefund", building.name, building.Id);
+            GoodChange goodChange = new GoodChange(good.name, good.amount, "ConstructionRefund", building);
+            _ProductionStats.AddGoodChange(goodChange);
+        }
+
+        public static void HearthFuelConsumed(Good good)
+        {
+            GoodChange goodChange = new GoodChange(good.name, -good.amount, "HearthFuel");
+            _ProductionStats.AddGoodChange(goodChange);
+        }
+
+        public static void HearthSacrifice(Good good)
+        {
+            GoodChange goodChange = new GoodChange(good.name, -good.amount, "HearthSacrifice");
+            _ProductionStats.AddGoodChange(goodChange);
+        }
+
+        public static void VillagerFoodConsumed(Good good)
+        {
+            GoodChange goodChange = new GoodChange(good.name, -good.amount, "VillagerEat");
             _ProductionStats.AddGoodChange(goodChange);
         }
 
