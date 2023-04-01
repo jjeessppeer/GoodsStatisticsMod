@@ -86,34 +86,9 @@ namespace ProductionStatsMod
             _ProductionStats = new ProductionStats();
         }
 
-        public static void GetTimestamp()
+        public static void InitialGood(Good good)
         {
-
-        }
-
-        public static void TestFunction()
-        {
-            Console.WriteLine("TestFunction 1");
-        }
-
-        public static void TestFunction2(string str)
-        {
-            Console.WriteLine("TestFunction 2");
-            Console.WriteLine(str);
-        }
-
-        public static void TestFunction3(object obj)
-        {
-            Console.WriteLine("TestFunction 3");
-            Console.WriteLine(obj);
-        }
-
-        public static void TestFunction4(Good good)
-        {
-            Console.WriteLine("TestFunction 4");
-            Console.WriteLine(good);
-            Reset();
-            GoodChange goodChange = new GoodChange(good.name, -good.amount, "HearthSacrifice");
+            GoodChange goodChange = new GoodChange(good.name, good.amount, "InitialGoods");
             _ProductionStats.AddGoodChange(goodChange);
         }
 
@@ -123,15 +98,27 @@ namespace ProductionStatsMod
             _ProductionStats.AddGoodChange(goodChange);
         }
 
+        public static void BuildingConsumption(Good good, Building building)
+        {
+            GoodChange goodChange = new GoodChange(good.name, -good.amount, "BuildingConsumption", building);
+            _ProductionStats.AddGoodChange(goodChange);
+        }
+
+        public static void VillagerFoodConsumed(Good good)
+        {
+            GoodChange goodChange = new GoodChange(good.name, -good.amount, "VillagerEat");
+            _ProductionStats.AddGoodChange(goodChange);
+        }
+
         public static void ConstructionDeliver(Good good, Building building)
         {
             GoodChange goodChange = new GoodChange(good.name, -good.amount, "ConstructionDeliver", building);
             _ProductionStats.AddGoodChange(goodChange);
         }
 
-        public static void ConstructionRefund(Good good, Building building)
+        public static void ConstructionRefund(Good good)
         {
-            GoodChange goodChange = new GoodChange(good.name, good.amount, "ConstructionRefund", building);
+            GoodChange goodChange = new GoodChange(good.name, good.amount, "ConstructionRefund");
             _ProductionStats.AddGoodChange(goodChange);
         }
 
@@ -144,12 +131,6 @@ namespace ProductionStatsMod
         public static void HearthSacrifice(Good good)
         {
             GoodChange goodChange = new GoodChange(good.name, -good.amount, "HearthSacrifice");
-            _ProductionStats.AddGoodChange(goodChange);
-        }
-
-        public static void VillagerFoodConsumed(Good good)
-        {
-            GoodChange goodChange = new GoodChange(good.name, -good.amount, "VillagerEat");
             _ProductionStats.AddGoodChange(goodChange);
         }
 
