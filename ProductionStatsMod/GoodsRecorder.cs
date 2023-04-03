@@ -121,8 +121,8 @@ namespace ProductionStatsMod
 
                 tableString += $"\n{year}" +
                     $"\t+{producedGoods}" +
-                    $"\t\t{(consumedGoods==0 ? "-" : "")}{consumedGoods}" +
-                    $"\t\t{startGoods}";
+                    $"{(producedGoods >= 100 ? "\t" : "\t\t")}{(consumedGoods==0 ? "-" : "")}{consumedGoods}" +
+                    $"{(consumedGoods <= -100 ? "\t" : "\t\t")}{startGoods}";
             }
             return tableString;
         }
@@ -165,9 +165,18 @@ namespace ProductionStatsMod
     {
         public static ProductionStats _ProductionStats = new ProductionStats();
 
-        public static void Reset()
+        public static void Reset(bool loadFromFile)
         {
-            _ProductionStats = new ProductionStats();
+            if (loadFromFile)
+            {
+                Console.WriteLine("Resetting saved...");
+                LoadFromFile();
+            }
+            else
+            {
+                Console.WriteLine("Resetting new...");
+                _ProductionStats = new ProductionStats();
+            }
         }
 
         public static string GetTable(string name)

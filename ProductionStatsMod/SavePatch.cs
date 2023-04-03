@@ -39,16 +39,24 @@ namespace ProductionStatsMod
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(GameController), "StartGame")]
-        static void OnGameStart()
+        [HarmonyPatch(typeof(GameLoader), "SetUp")]
+        static void OnGameStart2()
         {
-            if (!GameController.Instance.WasLoaded)
-            {
-                Console.WriteLine("Game was not loaded.");
-                return;
-            }
-            GoodMonitor.LoadFromFile();
+            GoodMonitor.Reset(GameController.Instance.WasLoaded);
         }
-        
+
+        //[HarmonyPostfix]
+        //[HarmonyPatch(typeof(GameController), "StartGame")]
+        //static void OnGameStart()
+        //{
+        //    GoodMonitor.Reset(GameController.Instance.WasLoaded);
+        //    //if (!GameController.Instance.WasLoaded)
+        //    //{
+        //    //    Console.WriteLine("Game was not loaded.");
+        //    //    return;
+        //    //}
+        //    //GoodMonitor.LoadFromFile();
+        //}
+
     }
 }
