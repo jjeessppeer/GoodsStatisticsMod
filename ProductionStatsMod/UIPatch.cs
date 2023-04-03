@@ -28,19 +28,23 @@ namespace ProductionStatsMod
     {
         static IEnumerable<MethodBase> TargetMethods()
         {
-            yield return AccessTools.Method(typeof(SimpleTooltip), "Show", new Type[] { typeof(RectTransform), typeof(string), typeof(string), typeof(string), typeof(TooltipSettings) });
+            yield return AccessTools.Method(typeof(SimpleTooltip), "Show", new Type[] { typeof(RectTransform), typeof(string), typeof(string), typeof(TooltipSettings) });
             //yield return AccessTools.Method(typeof(GoodsCategoryTrendMarker), "GetTooltipDesc");
         }
 
         static void Prefix(ref string header, ref string desc)
         {
             StackTrace stackTrace = new StackTrace();
-            var method = stackTrace.GetFrame(2).GetMethod();
-            for (int i = 1; i <= 6; ++i)
-                Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
-            if (!(method.DeclaringType == typeof(GoodsCategoryTrendMarker) || method.DeclaringType == typeof(GoodTrendMarker)))
+            //var method = stackTrace.GetFrame(3).GetMethod();
+            //for (int i = 1; i <= 6; ++i)
+            //    Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
+
+            //Console.WriteLine($"Tooltip: {method.DeclaringType}");
+            if (!(
+                stackTrace.GetFrame(3).GetMethod().DeclaringType == typeof(GoodsCategoryTrendMarker) ||
+                stackTrace.GetFrame(2).GetMethod().DeclaringType == typeof(GoodTrendMarker)))
                 return;
-            Console.WriteLine($"OVERRIDING TOOLTIP\n\t{header}");
+            Console.WriteLine($"OVERRIDING TOOLTIP: {header}");
             string contents = File.ReadAllText("tooltip.txt");
             if (contents == "")
                 desc = GoodMonitor.GetTable(header);
