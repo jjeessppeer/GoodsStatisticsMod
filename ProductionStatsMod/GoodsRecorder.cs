@@ -87,7 +87,9 @@ namespace ProductionStatsMod
     [Serializable]
     public class ProductionStats
     {
-        private List<GoodChange> _GoodsTimeline = new List<GoodChange>();
+        public List<GoodChange> _GoodsTimeline = new List<GoodChange>();
+        public string ModVersion = ProductionStatsMod.pluginVersion;
+
 
         public ProductionStats()
         {
@@ -164,7 +166,7 @@ namespace ProductionStatsMod
 
     public class GoodMonitor
     {
-        static ProductionStats _ProductionStats = new ProductionStats();
+        public static ProductionStats _ProductionStats = new ProductionStats();
 
         public static void Reset()
         {

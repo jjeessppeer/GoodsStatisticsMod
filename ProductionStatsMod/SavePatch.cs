@@ -28,27 +28,24 @@ namespace ProductionStatsMod
     class SaveLoadPatch
     {
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(JsonIO), "SaveToFile")]
+        [HarmonyPatch(typeof(JsonIO), "ExecuteSaveToFile")]
         static void OnSave(string path)
         {
             Console.WriteLine($"Saving game: {path}");
             Console.WriteLine($"{Utils.GetSaveFolder()}");
+
             Console.WriteLine($"Game Active: {Eremite.Controller.GameController.IsGameActive}");
             string file = Path.GetFileName(path);
             if (file != "Save.save" || !Eremite.Controller.GameController.IsGameActive) return;
+            string savePath = Path.Combine(Utils.GetSaveFolder(), "ProductionStats.save");
 
-            string serializedStats = GoodMonitor.GetSerialized();
-            Console.WriteLine(serializedStats);
-
+            //string serializedStats = GoodMonitor.GetSerialized();
+            //Console.WriteLine(serializedStats);
+            Console.WriteLine($"Saving prodstats: {savePath}");
+            Console.WriteLine(GoodMonitor._ProductionStats.Serialize());
+            JsonIO.SaveToFile(GoodMonitor._ProductionStats, savePath);
         }
 
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(GameLoader), "SetUp")]
-        static void OnLoad()
-        {
-            Console.WriteLine($"Loading game");
-            Console.WriteLine($"Game Active: {Eremite.Controller.GameController.IsGameActive}");
-        }
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameController), "StartGame")]
         static void OnGameStart()

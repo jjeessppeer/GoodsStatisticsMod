@@ -14,9 +14,9 @@ namespace ProductionStatsMod
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class ProductionStatsMod : BaseUnityPlugin
     {
-        public const string pluginGuid = "jesper.matchhistory.mod";
+        public const string pluginGuid = "jesper.productionstats.mod";
         public const string pluginName = "Production Stats Mod";
-        public const string pluginVersion = "0.1.0";
+        public const string pluginVersion = "1.0.0";
 
         public void Awake()
         {
