@@ -14,6 +14,7 @@ using Eremite;
 using System.Diagnostics;
 using Eremite.Model.State;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace ProductionStatsMod
 {
@@ -96,14 +97,9 @@ namespace ProductionStatsMod
             Console.WriteLine($"Initializing production stats...");
         }
 
-        public string Serialize()
-        {
-            string output = JsonConvert.SerializeObject(_GoodsTimeline, Formatting.Indented);
-            return output;
-        }
-
         public void AddGoodChange(GoodChange goodChange)
         {
+            if (goodChange.GoodDelta == 0) return;
             Console.WriteLine(goodChange);
             _GoodsTimeline.Add(goodChange);
         }
@@ -111,9 +107,7 @@ namespace ProductionStatsMod
         public string GetTable(string name)
         {
             string tableString = "Y\tProd\t\tCons\t\tStart";
-            //GameDate currentDate = Utils.GetGameDate();
             int currentYear = Utils.GetGameDate().year;
-            Console.WriteLine("CURRENT YEAR: " + currentYear);
             for (int i = 0; i < 4; ++i)
             {
                 int year = currentYear - i;
@@ -125,7 +119,10 @@ namespace ProductionStatsMod
                 int consumedGoods = GetGoodDeltaBetween(startDate, endDate, name, false);
                 int startGoods = GetGoodStorageAt(lastYearEnd, name);
 
-                tableString += $"\n{year}\t+{producedGoods}\t\t-{consumedGoods}\t\t{startGoods}";
+                tableString += $"\n{year}" +
+                    $"\t+{producedGoods}" +
+                    $"\t\t{(consumedGoods==0 ? "-" : "")}{consumedGoods}" +
+                    $"\t\t{startGoods}";
             }
             return tableString;
         }
@@ -178,9 +175,19 @@ namespace ProductionStatsMod
             return _ProductionStats.GetTable(name);
         }
 
-        public static string GetSerialized()
+        public static void SaveToFile()
         {
-            return _ProductionStats.Serialize();
+            string savePath = Path.Combine(Utils.GetSaveFolder(), "ProductionStats.save");
+            Console.WriteLine($"Saving production stats... {savePath}");
+            JsonIO.SaveToFile(_ProductionStats, savePath);
+        }
+
+        public static void LoadFromFile()
+        {
+            string path = Path.Combine(Utils.GetSaveFolder(), "ProductionStats.save");
+            Console.WriteLine($"Loading produciton stats... {path}");
+            string json = File.ReadAllText(path);
+            _ProductionStats = JsonConvert.DeserializeObject<ProductionStats>(json);
         }
 
         public static void InitialGood(Good good)

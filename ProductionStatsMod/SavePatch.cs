@@ -21,6 +21,7 @@ using System.IO;
 using TMPro;
 using Eremite.Controller.Generator;
 using Eremite.Controller;
+using Newtonsoft.Json;
 
 namespace ProductionStatsMod
 {
@@ -31,27 +32,22 @@ namespace ProductionStatsMod
         [HarmonyPatch(typeof(JsonIO), "ExecuteSaveToFile")]
         static void OnSave(string path)
         {
-            Console.WriteLine($"Saving game: {path}");
-            Console.WriteLine($"{Utils.GetSaveFolder()}");
-
-            Console.WriteLine($"Game Active: {Eremite.Controller.GameController.IsGameActive}");
             string file = Path.GetFileName(path);
-            if (file != "Save.save" || !Eremite.Controller.GameController.IsGameActive) return;
-            string savePath = Path.Combine(Utils.GetSaveFolder(), "ProductionStats.save");
+            if (file != "Save.save" || !GameController.IsGameActive) return;
 
-            //string serializedStats = GoodMonitor.GetSerialized();
-            //Console.WriteLine(serializedStats);
-            Console.WriteLine($"Saving prodstats: {savePath}");
-            Console.WriteLine(GoodMonitor._ProductionStats.Serialize());
-            JsonIO.SaveToFile(GoodMonitor._ProductionStats, savePath);
+            GoodMonitor.SaveToFile();
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameController), "StartGame")]
         static void OnGameStart()
         {
-            Console.WriteLine($"Game started {Utils.GetSaveFolder()}");
-            Console.WriteLine($"Game Active: {Eremite.Controller.GameController.IsGameActive}");
+            if (!GameController.Instance.WasLoaded)
+            {
+                Console.WriteLine("Game was not loaded.");
+                return;
+            }
+            GoodMonitor.LoadFromFile();
         }
         
     }

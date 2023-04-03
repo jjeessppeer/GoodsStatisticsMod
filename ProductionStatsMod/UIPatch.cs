@@ -36,6 +36,8 @@ namespace ProductionStatsMod
         {
             StackTrace stackTrace = new StackTrace();
             var method = stackTrace.GetFrame(2).GetMethod();
+            for (int i = 1; i <= 6; ++i)
+                Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
             if (!(method.DeclaringType == typeof(GoodsCategoryTrendMarker) || method.DeclaringType == typeof(GoodTrendMarker)))
                 return;
             Console.WriteLine($"OVERRIDING TOOLTIP\n\t{header}");
