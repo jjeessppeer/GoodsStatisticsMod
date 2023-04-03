@@ -205,14 +205,14 @@ namespace ProductionStatsMod
     [HarmonyPatch]
     public static class GoodMonitorPatches
     {
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(Eremite.Services.StorageService), "StoreInitialGoods")]
-        private static void StoreInitialGoods(StorageService __instance)
-        {
-            Console.WriteLine("StoreInitialGoods");
-            //__instance.Main.Store(Serviceable.StateService.Conditions.embarkGoods);
-            GoodMonitor.Reset();
-        }
+        //[HarmonyPrefix]
+        //[HarmonyPatch(typeof(Eremite.Services.StorageService), "StoreInitialGoods")]
+        //private static void StoreInitialGoods(StorageService __instance)
+        //{
+        //    Console.WriteLine("StoreInitialGoods");
+        //    //__instance.Main.Store(Serviceable.StateService.Conditions.embarkGoods);
+        //    GoodMonitor.Reset();
+        //}
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Building), "Deliver")]

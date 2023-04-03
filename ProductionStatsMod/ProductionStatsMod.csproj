@@ -67,6 +67,11 @@
     <Reference Include="MonoMod.Utils">
       <HintPath>..\Libraries\MonoMod.Utils.dll</HintPath>
     </Reference>
+    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -372,6 +377,8 @@
     <Compile Include="GoodsRecorder.cs" />
     <Compile Include="ProductionStatsMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SavePatch.cs" />
+    <Compile Include="UIPatch.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
