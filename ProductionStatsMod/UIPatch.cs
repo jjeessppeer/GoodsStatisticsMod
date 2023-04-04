@@ -35,14 +35,10 @@ namespace ProductionStatsMod
         static void Prefix(ref string header, ref string desc)
         {
             StackTrace stackTrace = new StackTrace();
-            //var method = stackTrace.GetFrame(3).GetMethod();
-            //for (int i = 1; i <= 6; ++i)
-            //    Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
-
-            //Console.WriteLine($"Tooltip: {method.DeclaringType}");
             if (!(
                 stackTrace.GetFrame(3).GetMethod().DeclaringType == typeof(GoodsCategoryTrendMarker) ||
-                stackTrace.GetFrame(2).GetMethod().DeclaringType == typeof(GoodTrendMarker)))
+                stackTrace.GetFrame(2).GetMethod().DeclaringType == typeof(GoodTrendMarker)
+                ))
                 return;
             Console.WriteLine($"OVERRIDING TOOLTIP: {header}");
             string contents = File.ReadAllText("tooltip.txt");
@@ -69,16 +65,8 @@ namespace ProductionStatsMod
     //        {
     //            return false;
     //        }
-    //        Console.WriteLine("OVERRIDING TOOLTIP");
-    //        //__result = "Hello there\nthis\nis\na\nreally\nlong\nString\nthislineisreally__________long__________\tline\twa\na\tb\tc\td\te";
-    //        //__result = "___________________________________________________";
-
     //        string contents = File.ReadAllText("tooltip.txt");
     //        __result = contents;
-    //        //__result += "\n" +
-    //        //    "_\tProduced\tConsumed\t\tStart\t\tEnd" +
-    //        //    "\nYear 2\t+10\t-24\t20\t34" +
-    //        //    "\nYear 1\t+2\t-4\t10\t20";
     //        return false;
     //    }
     //}
@@ -92,31 +80,10 @@ namespace ProductionStatsMod
         [HarmonyPatch(typeof(SimpleTooltip), "SetTexts")]
         static void TrendTooltipOverride(ref TMP_Text ___desc)
         {
+            // TODO: only apply to trendmarker tooltips
             Console.WriteLine("TEXT POSTFIX");
             ___desc.horizontalAlignment = HorizontalAlignmentOptions.Left;
         }
-        //[HarmonyPrefix]
-        //[HarmonyPatch(typeof(GoodTooltip), "Show", new Type[] { typeof(RectTransform), typeof(TooltipSettings), typeof(GoodModel), typeof(int), typeof(GoodTooltipMode), typeof(string) })]
-        //static void TooltipText(RectTransform target, TooltipSettings settings, GoodModel model, int amount, GoodTooltipMode mode, string footnote, GoodTooltip __instance)
-        //{
-        //    Console.WriteLine($"TOOLTIP: {model.displayName} {model.Description}");
-        //}
-
-        //[HarmonyPrefix]
-        //[HarmonyPatch(typeof(GoodTrendMarker), "GetTooltipDesc")]
-        //static bool TrendTooltipOverride(ref string __result)
-        //{
-        //    Console.WriteLine("OVERRIDING TOOLTIP");
-        //    __result = "Hello there";
-        //    return false;
-        //}
-
-        //[HarmonyPrefix]
-        //[HarmonyPatch(typeof(GoodTrendMarker), "OnPointerEnter")]
-        //static void TrendTooltipOverride2()
-        //{
-        //    Console.WriteLine("OVERRIDING TOOLTIP");
-        //}
     }
 
 }

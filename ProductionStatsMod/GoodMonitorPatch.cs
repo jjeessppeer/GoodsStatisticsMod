@@ -117,6 +117,28 @@ namespace ProductionStatsMod
     }
 
     [HarmonyPatch]
+    class StorageTakePatch
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Storage), "Take", new Type[] { typeof(int) })]
+        static void TakeInt(int owner, Storage __instance)
+        {
+            Good good = __instance.Goods.PeekLockedGood(owner);
+            StorageTakePatch.TakeGood(good, __instance);
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Storage), "Take", new Type[] { typeof(Good) })]
+        static void TakeGood(Good good, Storage __instance)
+        {
+            Console.WriteLine($"Storage Take: {good} {__instance}");
+            StackTrace stackTrace = new StackTrace();
+            for (int i = 1; i <= 6; ++i)
+                Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
+        }
+    }
+
+    [HarmonyPatch]
     class StorageRemovePatch
     {
         static IEnumerable<MethodBase> TargetMethods()
@@ -132,9 +154,10 @@ namespace ProductionStatsMod
             {
                 return;
             }
+            Console.WriteLine($"Storage Remove: {good} {__instance}");
 
             GoodMonitor.OtherGoodRemove(good);
-            Console.WriteLine($"Storage Remove: {good} {__instance}");
+            //Console.WriteLine($"Storage Remove: {good} {__instance}");
             for (int i = 1; i <= 6; ++i)
                 Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
         }
@@ -181,7 +204,6 @@ namespace ProductionStatsMod
 
             if (SkipStorageStore(stackTrace)) return;
 
-            
             GoodMonitor.OtherGoodAdd(good);
             for (int i = 1; i <= 6; ++i)
                 Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");

@@ -111,7 +111,7 @@ namespace ProductionStatsMod
             for (int i = 0; i < 4; ++i)
             {
                 int year = currentYear - i;
-                if (year < 0) break;
+                if (year < 1) break;
                 GameDate startDate = new GameDate(year, Season.Drizzle, SeasonQuarter.First);
                 GameDate endDate = new GameDate(year, Season.Storm, SeasonQuarter.Fourth);
                 GameDate lastYearEnd = new GameDate(year - 1, Season.Storm, SeasonQuarter.Fourth);
@@ -123,6 +123,10 @@ namespace ProductionStatsMod
                     $"\t+{producedGoods}" +
                     $"{(producedGoods >= 100 ? "\t" : "\t\t")}{(consumedGoods==0 ? "-" : "")}{consumedGoods}" +
                     $"{(consumedGoods <= -100 ? "\t" : "\t\t")}{startGoods}";
+            }
+            if (currentYear == 1)
+            {
+                tableString += "\n.";
             }
             return tableString;
         }
@@ -195,6 +199,11 @@ namespace ProductionStatsMod
         {
             string path = Path.Combine(Utils.GetSaveFolder(), "ProductionStats.save");
             Console.WriteLine($"Loading produciton stats... {path}");
+            if (!File.Exists(path))
+            {
+                Reset(false);
+                return;
+            }
             string json = File.ReadAllText(path);
             _ProductionStats = JsonConvert.DeserializeObject<ProductionStats>(json);
         }
