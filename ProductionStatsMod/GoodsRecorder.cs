@@ -89,6 +89,7 @@ namespace ProductionStatsMod
     public class ProductionStats
     {
         public List<GoodChange> _GoodsTimeline = new List<GoodChange>();
+        public List<Good> _ProductionSkips = new List<Good>();
         public string ModVersion = ProductionStatsMod.pluginVersion;
 
 
@@ -100,8 +101,17 @@ namespace ProductionStatsMod
         public void AddGoodChange(GoodChange goodChange)
         {
             if (goodChange.GoodDelta == 0) return;
+            //for (int i = 0; i < _ProductionSkips.Count; ++i)
+            //{
+            //    if (_ProductionSkips[i])
+            //}
             Console.WriteLine(goodChange);
             _GoodsTimeline.Add(goodChange);
+        }
+
+        public void SkipNextProduction(Good good)
+        {
+            _ProductionSkips.Add(good);
         }
 
         public string GetTable(string name)
@@ -206,6 +216,24 @@ namespace ProductionStatsMod
             }
             string json = File.ReadAllText(path);
             _ProductionStats = JsonConvert.DeserializeObject<ProductionStats>(json);
+        }
+
+
+        public static void GoodProduced(Good good)
+        {
+            GoodChange goodChange = new GoodChange(good, 1, "Production");
+            _ProductionStats.AddGoodChange(goodChange);
+        }
+
+        public static void GoodConsumed(Good good)
+        {
+            GoodChange goodChange = new GoodChange(good, -1, "Consumption");
+            _ProductionStats.AddGoodChange(goodChange);
+        }
+
+        public static void SkipNextProduction(Good good)
+        {
+            // Skip the next production of good.
         }
 
         public static void InitialGood(Good good)
