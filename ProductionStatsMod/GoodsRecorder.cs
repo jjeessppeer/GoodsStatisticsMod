@@ -53,7 +53,7 @@ namespace ProductionStatsMod
 
         public GameDate Date;
 
-        public GoodChange(Good good, int multiplier, string productionCategory, string buildingName = "", int buildingId = -1)
+        public GoodChange(Good good, int multiplier, string productionCategory, Building building)
         {
             GoodModel goodModel = Utils.GetGoodModel(good);
             GoodName = goodModel.displayName.Text;
@@ -62,15 +62,18 @@ namespace ProductionStatsMod
 
             ProductionCategory = productionCategory;
 
-            BuildingName = buildingName;
-            BuildingId = buildingId;
+            if (building != null)
+            {
+                BuildingName = building.BuildingModel.Name;
+                BuildingId = building.Id;
+            }
+            else
+            {
+                BuildingName = "";
+                BuildingId = -1;
+            }
 
             Date = Utils.GetGameDate();
-        }
-
-        public GoodChange(Good good, int multiplier, string productionCategory, Building building) : 
-            this(good, multiplier, productionCategory, building.BuildingModel.Name, building.Id)
-        {
         }
 
         public override string ToString()
@@ -89,19 +92,34 @@ namespace ProductionStatsMod
     public class ProductionStats
     {
         public List<GoodChange> _GoodsTimeline = new List<GoodChange>();
+        public List<Good> _ProductionSkips = new List<Good>();
         public string ModVersion = ProductionStatsMod.pluginVersion;
-
 
         public ProductionStats()
         {
             Console.WriteLine($"Initializing production stats...");
         }
 
-        public void AddGoodChange(GoodChange goodChange)
+        public void AddGoodChange(Good good, int multiplier, Building building = null)
         {
+            for (int i = 0; i < _ProductionSkips.Count; ++i)
+            {
+                if (multiplier == 1 && _ProductionSkips[i] == good)
+                {
+                    Console.WriteLine("Skipping good production event. " + good);
+                    _ProductionSkips.RemoveAt(i);
+                    return;
+                }
+            }
+            GoodChange goodChange = new GoodChange(good, multiplier, "Unspecified", building);
             if (goodChange.GoodDelta == 0) return;
             Console.WriteLine(goodChange);
             _GoodsTimeline.Add(goodChange);
+        }
+
+        public void SkipNextProduction(Good good)
+        {
+            _ProductionSkips.Add(good);
         }
 
         public string GetTable(string name)
@@ -130,7 +148,7 @@ namespace ProductionStatsMod
             }
             return tableString;
         }
-
+        
         public int GetGoodStorageAt(GameDate date, string name)
         {
             int sum = 0;
@@ -144,6 +162,7 @@ namespace ProductionStatsMod
             }
             return sum;
         }
+        
         public int GetGoodDeltaBetween(GameDate startDate, GameDate endDate, string name, bool countProduction)
         {
             int sum = 0;
@@ -208,67 +227,19 @@ namespace ProductionStatsMod
             _ProductionStats = JsonConvert.DeserializeObject<ProductionStats>(json);
         }
 
-        public static void InitialGood(Good good)
+        public static void GoodProduced(Good good, Building building = null)
         {
-            GoodChange goodChange = new GoodChange(good, 1, "InitialGoods");
-            goodChange.Date = new GameDate(0, Season.Storm, SeasonQuarter.Fourth);
-            _ProductionStats.AddGoodChange(goodChange);
+            _ProductionStats.AddGoodChange(good, 1);
         }
 
-        public static void BuildingProduction(Good good, Building building)
+        public static void GoodConsumed(Good good, Building building = null)
         {
-            GoodChange goodChange = new GoodChange(good, 1, "BuildingProduction", building);
-            _ProductionStats.AddGoodChange(goodChange);
+            _ProductionStats.AddGoodChange(good, -1);
         }
 
-        public static void BuildingConsumption(Good good, Building building)
+        public static void SkipNextProduction(Good good)
         {
-            GoodChange goodChange = new GoodChange(good, -1, "BuildingConsumption", building);
-            _ProductionStats.AddGoodChange(goodChange);
-        }
-
-        public static void VillagerFoodConsumed(Good good)
-        {
-            GoodChange goodChange = new GoodChange(good, -1, "VillagerEat");
-            _ProductionStats.AddGoodChange(goodChange);
-        }
-
-        public static void ConstructionDeliver(Good good, Building building)
-        {
-            GoodChange goodChange = new GoodChange(good, -1, "ConstructionDeliver", building);
-            _ProductionStats.AddGoodChange(goodChange);
-        }
-
-        public static void ConstructionRefund(Good good)
-        {
-            GoodChange goodChange = new GoodChange(good, 1, "ConstructionRefund");
-            _ProductionStats.AddGoodChange(goodChange);
-        }
-
-        public static void HearthFuelConsumed(Good good)
-        {
-            GoodChange goodChange = new GoodChange(good, -1, "HearthFuel");
-            _ProductionStats.AddGoodChange(goodChange);
-        }
-
-        public static void HearthSacrifice(Good good)
-        {
-            GoodChange goodChange = new GoodChange(good, -1, "HearthSacrifice");
-            _ProductionStats.AddGoodChange(goodChange);
-        }
-
-        public static void OtherGoodAdd(Good good)
-        {
-            GoodChange goodChange = new GoodChange(good, 1, "Other");
-            _ProductionStats.AddGoodChange(goodChange);
-
-        }
-
-        public static void OtherGoodRemove(Good good)
-        {
-            GoodChange goodChange = new GoodChange(good, -1, "Other");
-            _ProductionStats.AddGoodChange(goodChange);
-
+            _ProductionStats.SkipNextProduction(good);
         }
     }
 }
