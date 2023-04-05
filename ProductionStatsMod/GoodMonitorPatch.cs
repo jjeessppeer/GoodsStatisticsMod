@@ -18,6 +18,11 @@ using System.Reflection;
 
 namespace ProductionStatsMod
 {
+
+    // TODO: Workshops and buildings. Better consumption/production logic for building deliveries. Goods should not be considered consumed when delivered to workshop or produced when returned.
+    // TODO.
+
+
     [HarmonyPatch]
     public class StorePatch
     {
@@ -116,13 +121,14 @@ namespace ProductionStatsMod
             for (int i = 1; i <= 12; ++i)
                 Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
 
-            //if (stackTrace.GetFrame(7).GetMethod().Name == "StoreCollectedGood")
-            //{
-            //    // Good is only transported to main storage. Not consumed.
-            //    // Skip next production event of good.
-            //    // It will either be moved to main storage or cancelled and returned.
-            //    return;
-            //}
+            if (stackTrace.GetFrame(7).GetMethod().Name == "StoreCollectedGood")
+            {
+                // Good is only transported to main storage. Not consumed.
+                // Skip next production event of good.
+                // It will either be moved to main storage or cancelled and returned.
+                GoodMonitor.SkipNextProduction(good);
+                return;
+            }
 
             GoodMonitor.GoodConsumed(good);
 
