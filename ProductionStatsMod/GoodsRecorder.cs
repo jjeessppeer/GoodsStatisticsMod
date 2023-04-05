@@ -107,6 +107,7 @@ namespace ProductionStatsMod
                 if (multiplier == 1 && _ProductionSkips[i] == good)
                 {
                     Console.WriteLine("Skipping good production event. " + good);
+                    _ProductionSkips.RemoveAt(i);
                     return;
                 }
             }
