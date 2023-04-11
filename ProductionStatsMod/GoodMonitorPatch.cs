@@ -20,8 +20,6 @@ namespace ProductionStatsMod
 {
 
     // TODO: Workshops and buildings. Better consumption/production logic for building deliveries. Goods should not be considered consumed when delivered to workshop or produced when returned.
-    // TODO.
-
 
     [HarmonyPatch]
     public class StorePatch
@@ -74,9 +72,9 @@ namespace ProductionStatsMod
         static void RemoveGood(Good good, IStorage __instance)
         {
             Console.WriteLine($"Storage Remove: {good} {__instance}");
-            StackTrace stackTrace = new StackTrace();
-            for (int i = 1; i <= 6; ++i)
-                Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
+            //StackTrace stackTrace = new StackTrace();
+            //for (int i = 1; i <= 6; ++i)
+            //    Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
             GoodMonitor.GoodConsumed(good);
         }
     }
@@ -118,8 +116,8 @@ namespace ProductionStatsMod
         {
             Console.WriteLine($"Take: {good}");
             StackTrace stackTrace = new StackTrace(); 
-            for (int i = 1; i <= 12; ++i)
-                Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
+            //for (int i = 1; i <= 12; ++i)
+            //    Console.WriteLine($"{i}: {stackTrace.GetFrame(i).GetMethod().Name}");
 
             if (stackTrace.GetFrame(7).GetMethod().Name == "StoreCollectedGood")
             {

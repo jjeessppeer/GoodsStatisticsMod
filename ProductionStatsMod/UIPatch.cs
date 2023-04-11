@@ -40,12 +40,7 @@ namespace ProductionStatsMod
                 stackTrace.GetFrame(2).GetMethod().DeclaringType == typeof(GoodTrendMarker)
                 ))
                 return;
-            Console.WriteLine($"OVERRIDING TOOLTIP: {header}");
-            string contents = File.ReadAllText("tooltip.txt");
-            if (contents == "")
-                desc = GoodMonitor.GetTable(header);
-            else
-                desc = contents;
+            desc = GoodMonitor.GetTable(header);
         }
     }
 
@@ -81,7 +76,6 @@ namespace ProductionStatsMod
         static void TrendTooltipOverride(ref TMP_Text ___desc)
         {
             // TODO: only apply to trendmarker tooltips
-            Console.WriteLine("TEXT POSTFIX");
             ___desc.horizontalAlignment = HorizontalAlignmentOptions.Left;
         }
     }

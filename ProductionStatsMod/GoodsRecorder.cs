@@ -15,6 +15,7 @@ using System.Diagnostics;
 using Eremite.Model.State;
 using Newtonsoft.Json;
 using System.IO;
+using Eremite.Controller;
 
 namespace ProductionStatsMod
 {
@@ -53,7 +54,7 @@ namespace ProductionStatsMod
 
         public GameDate Date;
 
-        public GoodChange(Good good, int multiplier, string productionCategory, Building building)
+        public GoodChange(Good good, int multiplier, string productionCategory, Building building, GameDate? date = null)
         {
             GoodModel goodModel = Utils.GetGoodModel(good);
             GoodName = goodModel.displayName.Text;
@@ -72,8 +73,10 @@ namespace ProductionStatsMod
                 BuildingName = "";
                 BuildingId = -1;
             }
-
-            Date = Utils.GetGameDate();
+            if (date != null) 
+                Date = date.Value;
+            else
+                Date = Utils.GetGameDate();
         }
 
         public override string ToString()
@@ -93,11 +96,12 @@ namespace ProductionStatsMod
     {
         public List<GoodChange> _GoodsTimeline = new List<GoodChange>();
         public List<Good> _ProductionSkips = new List<Good>();
+        public bool RecordedSinceGameStart;
         public string ModVersion = ProductionStatsMod.pluginVersion;
 
-        public ProductionStats()
+        public ProductionStats(bool recordedSinceGameStart)
         {
-            Console.WriteLine($"Initializing production stats...");
+            RecordedSinceGameStart = recordedSinceGameStart;
         }
 
         public void AddGoodChange(Good good, int multiplier, Building building = null)
@@ -124,7 +128,7 @@ namespace ProductionStatsMod
 
         public string GetTable(string name)
         {
-            string tableString = "Y\tProd\t\tCons\t\tStart";
+            string tableString = $"Y\tProd\t\tCons{(RecordedSinceGameStart ? "\t\tStart" : "")}";
             int currentYear = Utils.GetGameDate().year;
             for (int i = 0; i < 4; ++i)
             {
@@ -139,8 +143,9 @@ namespace ProductionStatsMod
 
                 tableString += $"\n{year}" +
                     $"\t+{producedGoods}" +
-                    $"{(producedGoods >= 100 ? "\t" : "\t\t")}{(consumedGoods==0 ? "-" : "")}{consumedGoods}" +
-                    $"{(consumedGoods <= -100 ? "\t" : "\t\t")}{startGoods}";
+                    $"{(producedGoods >= 100 ? "\t" : "\t\t")}{(consumedGoods == 0 ? "-" : "")}{consumedGoods}";
+                if (RecordedSinceGameStart)
+                    tableString += $"{(consumedGoods <= -1000 ? "\t" : "\t\t")}{startGoods}";
             }
             if (currentYear == 1)
             {
@@ -186,20 +191,20 @@ namespace ProductionStatsMod
 
     public class GoodMonitor
     {
-        public static ProductionStats _ProductionStats = new ProductionStats();
+        public static ProductionStats _ProductionStats = new ProductionStats(true);
 
-        public static void Reset(bool loadFromFile)
+        public static void Reset()
         {
-            if (loadFromFile)
+            ProductionStats prodStats = null;
+            if (GameController.Instance.WasLoaded)
             {
-                Console.WriteLine("Resetting saved...");
-                LoadFromFile();
+                prodStats = LoadFromFile();
             }
             else
             {
-                Console.WriteLine("Resetting new...");
-                _ProductionStats = new ProductionStats();
+                prodStats = new ProductionStats(true);
             }
+            _ProductionStats = prodStats;
         }
 
         public static string GetTable(string name)
@@ -214,17 +219,17 @@ namespace ProductionStatsMod
             JsonIO.SaveToFile(_ProductionStats, savePath);
         }
 
-        public static void LoadFromFile()
+        public static ProductionStats LoadFromFile()
         {
+            // TODO: Verify that the productionstat save is from the same save instance as the game save.
             string path = Path.Combine(Utils.GetSaveFolder(), "ProductionStats.save");
             Console.WriteLine($"Loading produciton stats... {path}");
             if (!File.Exists(path))
             {
-                Reset(false);
-                return;
+                return new ProductionStats(false);
             }
             string json = File.ReadAllText(path);
-            _ProductionStats = JsonConvert.DeserializeObject<ProductionStats>(json);
+            return JsonConvert.DeserializeObject<ProductionStats>(json);
         }
 
         public static void GoodProduced(Good good, Building building = null)

@@ -42,7 +42,7 @@ namespace ProductionStatsMod
         [HarmonyPatch(typeof(GameLoader), "SetUp")]
         static void OnGameStart2()
         {
-            GoodMonitor.Reset(GameController.Instance.WasLoaded);
+            GoodMonitor.Reset();
         }
 
         //[HarmonyPostfix]
