@@ -11,5 +11,5 @@ Replaces the default good trend indicator tooltip with a more expanded one displ
    - Unzip contents directly to the Against the Storm game directory.
    - Launch the game and then close it once it has loaded. Some new files and folders should now have appeared in the BepInEx folder.
 2. Install the mod
-   - Download the mod .dll file from the [releases](https://github.com/jjeessppeer/GoodsStatisticsMod/releases) page.
+   - Download the *GoodsStatisticsMod.dll* file from the [releases](https://github.com/jjeessppeer/GoodsStatisticsMod/releases) page.
    - Put the downloaded *ProductionStatsMod.dll* file into *"Against the Storm\BepInEx\plugins"*
