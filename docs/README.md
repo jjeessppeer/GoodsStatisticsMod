@@ -1,10 +1,10 @@
-# Features
-Replaces the default good trend indicator tooltip with a more expanded one displaying yearly production and consumption. Should work with existing save files.
+## Features
+Replaces the default good trend indicator tooltip with a more expanded one displaying yearly production and consumption. 
 
 ![Preview screenshot 1](/docs/images/preview_1.png) 
 ![Preview screenshot 2](/docs/images/preview_2.png)
 
-# Installation
+## Installation
 
 1. Install BepInEx
    - Download BepInEx https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x86_5.4.21.0.zip
@@ -13,3 +13,6 @@ Replaces the default good trend indicator tooltip with a more expanded one displ
 2. Install the mod
    - Download the *GoodsStatisticsMod.dll* file from the [releases](https://github.com/jjeessppeer/GoodsStatisticsMod/releases) page.
    - Put the downloaded *ProductionStatsMod.dll* file into *"Against the Storm\BepInEx\plugins"*
+
+## Compatibility
+Tested with 0.48 but will probably work with future updates. Should work with existing save files. 
